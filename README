@@ -1,0 +1,16 @@
+Multi dimensional scaling
+==================
+
+The following has various codes to test MultiDimensional Scaling (MDS)
+for data of final 2 dimensional output
+
+The following methods are implemented
+ - Simulated annealing
+   Various variations of simulated annealing are imlemented.
+   The non-standard simulated annealing extension project of gsl
+   is used.
+    - Basic
+    - Multibest
+    - Manybest
+    Each of the above in direct random point and through simplex
+    is computed
