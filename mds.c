@@ -30,7 +30,7 @@ float **copy_float_matrix_2d(float **p, int dim1, int dim2)
 
 mds_data_t *new_mds_data()
 {
-  return (mds_data_t *) malloc (sizeof(mds_data_t *));
+  return (mds_data_t *) malloc (sizeof(mds_data_t));
 }
 
 mds_data_t *copy_mds_data(mds_data_t *M)	  
@@ -73,7 +73,7 @@ float loss_function_simple(mds_data_t *M, float lim)
   return loss;
 }
 
-void step_function (mds_data_t *M, float var, gsl_rng* number_generator)
+void step_function_internal (mds_data_t *M, float var, gsl_rng* number_generator)
 /* var stands for width of distribution
  * var must be supplied so as to reflect the temperature.
  */
@@ -96,4 +96,14 @@ void print_matrix_2d (float **p, int dim1, int dim2, char* str)
     printf("\n");
   }
   printf("\n - - - - - - - - - - - - - - - - - - - - \n");
+}
+
+void copy_only_float_matrix_2d (float **p, float **p1, int dim1, int dim2)
+{
+  int i,j;
+  for (i = 0; i < dim1; i++){
+    for (j = 0; j < dim2; j++){
+      p1[i][j] = p[i][j];
+    }
+  }
 }

@@ -69,7 +69,7 @@ int main (int argc, char *argv[]){
   /* create a random number gerneator */
   gsl_rng *numbers_generator = gsl_rng_alloc(gsl_rng_rand);
   //gsl_rng_set(numbers_generator, 15);
-  step_function(M, 0.1, numbers_generator);
+  step_function_internal(M, 0.1, numbers_generator);
   print_p(M,"p after step_function");
   printf("computed loss %f after step_function\n",loss_function_simple(M,-1));
   gsl_rng_free(numbers_generator);

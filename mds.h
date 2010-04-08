@@ -5,10 +5,12 @@
 #include <stdlib.h>
 #include <stdio.h>
 #include <math.h>
+#include <float.h>
+#include <unistd.h>
 
 #define SQR(x) (x)*(x)
 
-typedef struct mds_data_t {
+typedef struct mds_data {
   float **p; //List of points
   int pts; // No. of points
   int pdim; // No. of dimensions in each ponit
@@ -18,9 +20,10 @@ typedef struct mds_data_t {
 mds_data_t *new_mds_data ();
 float **new_float_matrix_2d (int dim1, int dim2);
 float **copy_float_matrix_2d (float **p, int dim1, int dim2);
+void copy_only_float_matrix_2d (float **p, float **p1, int dim1, int dim2);
 mds_data_t *copy_mds_data (mds_data_t *M);
 float loss_function_simple (mds_data_t *M, float lim);
-void step_function (mds_data_t *M, float var, gsl_rng * number_generator); /* var stands for width of distribution */
+void step_function_internal (mds_data_t *M, float var, gsl_rng * number_generator); /* var stands for width of distribution */
 void print_matrix_2d (float **p, int dim1, int dim2, char* str);
 
 #endif
