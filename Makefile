@@ -12,6 +12,9 @@ tests: test_basic_nonsimplex test_funcs
 test_basic_nonsimplex: mds.o test_basic_nonsimplex.o
 	$(CC) $(LDFLAGS) $(addprefix $(builddir)/,$^) -o build/$@
 
+mds_simplex: mds.o mds_simplex.o
+	$(CC) $(LDFLAGS) $(addprefix $(builddir)/,$^) -o build/$@
+
 basic_nonsimplex: mds.o basic_nonsimplex.o
 	$(CC) $(LDFLAGS) $(LIBRARY_MODE) $(addprefix $(builddir)/,$^) -o build/libbasic_nonsimplex.so
 
@@ -19,8 +22,6 @@ test_funcs:  test_funcs.o  mds.o
 	$(CC) $(LDFLAGS)  $(builddir)/test_funcs.o  $(builddir)/mds.o -o build/test_funcs
 puresa_old: pureSA.o lossFunctions.o
 	$(CC) $(LDFLAGS) $(builddir)/pureSA.o $(builddir)/lossFunctions.o -o build/puresa
-
-
 
 %.so: %.c
 	$(CC) $(CFLAGS) $< -o $(builddir)/lib$@

@@ -1,6 +1,7 @@
 #ifndef MDS_H
 #define MDS_H
 #include <gsl/gsl_rng.h>
+#include <gsl/gsl_matrix.h>
 #include "annealing.h"
 #include <stdlib.h>
 #include <stdio.h>
@@ -10,20 +11,7 @@
 
 #define SQR(x) (x)*(x)
 
-typedef struct mds_data {
-  float **p; //List of points
-  int pts; // No. of points
-  int pdim; // No. of dimensions in each ponit
-  float **d; // Distance matrix
-} mds_data_t;
-
-mds_data_t *new_mds_data ();
-float **new_float_matrix_2d (int dim1, int dim2);
-float **copy_float_matrix_2d (float **p, int dim1, int dim2);
-void copy_only_float_matrix_2d (float **p, float **p1, int dim1, int dim2);
-mds_data_t *copy_mds_data (mds_data_t *M);
-float loss_function_simple (mds_data_t *M, float lim);
-void step_function_internal (mds_data_t *M, float var, gsl_rng * number_generator); /* var stands for width of distribution */
-void print_matrix_2d (float **p, int dim1, int dim2, char* str);
-
-#endif
+float loss_function_simple (gsl_matrix *p, gsl_matrix *d, float lim);
+void step_function_internal (gsl_matrix *p, float var, gsl_rng * number_generator); /* var stands for width of distribution */
+void print_matrix_2d (gsl_matrix *p, char* str);
+#endif 

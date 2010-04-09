@@ -1,67 +1,20 @@
 #include "mds.h"
 
-
-
-float **new_float_matrix_2d(int dim1, int dim2)
-/* Allocates and returns unitialized new matrix*/
-{
-  float **x;
-  int i;
-
-  x = (float **) malloc (dim1 * sizeof(float *));
-  for (i = 0; i < dim1; i++){
-    x[i] = (float *) malloc (dim2 * sizeof(float *));
-  }
-  return x;
-}
-
-float **copy_float_matrix_2d(float **p, int dim1, int dim2)
-/* Initialize and return new 2d matrix copied from p*/
-{
-  float **x;
-  int i,j;
-  
-  x = new_float_matrix_2d(dim1, dim2);
-  for (i = 0; i < dim1; i++)
-    for (j = 0; j < dim2; j++)
-      x[i][j] = p[i][j];
-  return x;
-}
-
-mds_data_t *new_mds_data()
-{
-  return (mds_data_t *) malloc (sizeof(mds_data_t));
-}
-
-mds_data_t *copy_mds_data(mds_data_t *M)	  
-/* Does NOT copy the d matrix */
-{
-  mds_data_t *mds_data;
-  mds_data = new_mds_data();
-  mds_data->pts = M->pts;
-  mds_data->pdim = M->pdim;
-  mds_data->d = M->d;   // Does NOT copy the d matrix
-  mds_data->p = copy_float_matrix_2d(M->p, M->pts, M->pdim);
-
-  return mds_data;
-}
-
-
-float loss_function_simple(mds_data_t *M, float lim)
+float loss_function_simple(gsl_matrix *p, gsl_matrix *d, float lim)
 /* M->d must be squared distances */
 {
   int i,j,k;
   float psum,dist_p,dist_d,diff,loss;
 
-  for (i = 0; i < M->pts; i++) {
+  for (i = 0; i < p->size1; i++) {
     for (j = 0; j < i; j++) {
-      for (k = 0,psum = 0; k < M->pdim; k++){
-	diff = (M->p[i][k] - M->p[j][k]);
+      for (k = 0,psum = 0; k < p->size2; k++){
+	diff = (gsl_matrix_get(p,i,k) - gsl_matrix_get(p,j,k));
 	psum += SQR(diff);
       }
       // dist_p = sqrt(psum);
       dist_p = psum;
-      dist_d = M->d[i][j];
+      dist_d = gsl_matrix_get(d,i,j);
       diff = sqrt(dist_p) - sqrt(dist_d);
       // printf(" | %f %f %f",dist_p, dist_d, diff);
       loss += SQR(diff);
@@ -73,37 +26,26 @@ float loss_function_simple(mds_data_t *M, float lim)
   return loss;
 }
 
-void step_function_internal (mds_data_t *M, float var, gsl_rng* number_generator)
+void step_function_internal (gsl_matrix *p, float var, gsl_rng* number_generator)
 /* var stands for width of distribution
  * var must be supplied so as to reflect the temperature.
  */
 {
   int i,j;
-  for (i = 0; i < M->pts; i++)
-    for (j = 0; j < M->pdim; j++)
-      M->p[i][j] += var * 2 * (gsl_rng_uniform(number_generator) - 0.5);
-  gsl_rng_uniform(number_generator);
+  for (i = 0; i < p->size1; i++)
+    for (j = 0; j < p->size2; j++)
+      *gsl_matrix_ptr(p,i,j) += var * 2 * (gsl_rng_uniform(number_generator) - 0.5);
 }
 
-void print_matrix_2d (float **p, int dim1, int dim2, char* str)
+void print_matrix_2d (gsl_matrix *p, char* str)
 {
   int i,j;
   printf("printing matrix %s \n - - - - - - - - - - - - - - - - - - - - \n", str);
-  for (i = 0; i < dim1; i++){
-    for (j = 0; j < dim2; j++){
-      printf(" %f ",p[i][j]);
+  for (i = 0; i < p->size1; i++){
+    for (j = 0; j < p->size2; j++){
+      printf(" %f ",gsl_matrix_get(p,i,j));
     }
     printf("\n");
   }
   printf("\n - - - - - - - - - - - - - - - - - - - - \n");
-}
-
-void copy_only_float_matrix_2d (float **p, float **p1, int dim1, int dim2)
-{
-  int i,j;
-  for (i = 0; i < dim1; i++){
-    for (j = 0; j < dim2; j++){
-      p1[i][j] = p[i][j];
-    }
-  }
 }

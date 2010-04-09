@@ -1,6 +1,33 @@
 #include "mds.h"
 #include "basic_nonsimplex.h"
 
+
+void print_matrix (float **p, int dim1, int dim2, char* str)
+{
+  int i,j;
+  printf("printing matrix %s \n - - - - - - - - - - - - - - - - - - - - \n", str);
+  for (i = 0; i < dim1; i++){
+    for (j = 0; j < dim2; j++){
+      printf(" %f ",p[i][j]);
+    }
+    printf("\n");
+  }
+  printf("\n - - - - - - - - - - - - - - - - - - - - \n");
+}
+
+float **new_float_matrix_2d(int dim1, int dim2)
+/* Allocates and returns unitialized new matrix*/
+{
+  float **x;
+  int i;
+
+  x = (float **) malloc (dim1 * sizeof(float *));
+  for (i = 0; i < dim1; i++){
+    x[i] = (float *) malloc (dim2 * sizeof(float *));
+  }
+  return x;
+}
+
 int main(int argc, char *argv[]){
   int verbose_mode = 0;
   {
@@ -52,7 +79,7 @@ int main(int argc, char *argv[]){
   for (i = 0; i < 3; i++)
     for (j = 0; j < 2; j++)
       p[i][j] = gsl_rng_uniform(number_generator) * 5;
-  print_matrix_2d(p, 3, 2, "p intially");
+  print_matrix(p, 3, 2, "p intially");
 
   mds_solve(p, 3, 2, d, 16, .001, 1, 1.005, 10, 1, 1e-5, verbose_mode);
   
