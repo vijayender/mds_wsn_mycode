@@ -13,7 +13,7 @@ int main (int argc, char *argv[]){
   p = gsl_matrix_alloc(3, 2);
   d = gsl_matrix_alloc(3, 3);
 
-  print_matrix_2d(p, "d");
+  print_matrix_2d(d, "d");
 
   gsl_matrix_set(p,0,0,3);
   gsl_matrix_set(p,1,1,-3);
@@ -62,8 +62,15 @@ int main (int argc, char *argv[]){
       gsl_matrix_set(d,i,j,psum);
     }
 
-  print_p(p1,"d1");
+  print_p(d,"d1");
   // TESTING step_function
+
+  //Printing the block
+  double *block = p->block->data;
+  for (i = 0; i < p->block->size; i++)
+    printf(" %f ",block[i]);
+  printf("A proof of row ordered data\n\n");
+  
   /* create a random number gerneator */
   gsl_rng *numbers_generator = gsl_rng_alloc(gsl_rng_rand);
   //gsl_rng_set(numbers_generator, 15);

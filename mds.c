@@ -1,10 +1,10 @@
 #include "mds.h"
 
-float loss_function_simple(gsl_matrix *p, gsl_matrix *d, float lim)
+double loss_function_simple(gsl_matrix *p, gsl_matrix *d, float lim)
 /* M->d must be squared distances */
 {
   int i,j,k;
-  float psum,dist_p,dist_d,diff,loss;
+  double psum,dist_p,dist_d,diff,loss=0;
 
   for (i = 0; i < p->size1; i++) {
     for (j = 0; j < i; j++) {
@@ -35,6 +35,7 @@ void step_function_internal (gsl_matrix *p, float var, gsl_rng* number_generator
   for (i = 0; i < p->size1; i++)
     for (j = 0; j < p->size2; j++)
       *gsl_matrix_ptr(p,i,j) += var * 2 * (gsl_rng_uniform(number_generator) - 0.5);
+  gsl_rng_uniform(number_generator);
 }
 
 void print_matrix_2d (gsl_matrix *p, char* str)

@@ -18,6 +18,7 @@ typedef struct mds_data_t{
 } mds_data_t;
 
 gsl_matrix * convert_to_gsl_matrix (float **_p, int dim1, int dim2);
+void update_to_float (gsl_matrix *, float **);
 mds_data_t * copy_mds_data(mds_data_t *M);
 
 int mds_solve(float **p, int pts, int pdim, float**  d, float _max_step, float energy_limit, float temperature, float damping_factor, int iters, float boltzman_k, float temp_min, int verbose_mode){
@@ -66,7 +67,9 @@ int mds_solve(float **p, int pts, int pdim, float**  d, float _max_step, float e
   print_p(temp->p,"p");
   print_p(temp->d,"d");
   gsl_rng_free(S.numbers_generator);
-
+  temp->p->block;
+  gsl_block_data;
+  update_to_float(temp->p, p);
   return steps_count;
   //  return 0;
 }
@@ -105,7 +108,7 @@ copy_function (void * dummy ANNEALING_UNUSED, void * dst_configuration, void * s
   mds_data_t * dst = dst_configuration;
   mds_data_t *	src = src_configuration;
 
-  gsl_matrix_memcpy(src->p, dst->p);
+  gsl_matrix_memcpy(dst->p, src->p);
 }
 
 gsl_matrix * convert_to_gsl_matrix (float **_p, int dim1, int dim2)
@@ -118,6 +121,15 @@ gsl_matrix * convert_to_gsl_matrix (float **_p, int dim1, int dim2)
     for (j = 0; j < dim2; j++)
       gsl_matrix_set(p,i,j,_p[i][j]);
   return p;
+}
+
+void update_to_float (gsl_matrix *p,float **_p)
+{
+  int i,j;
+  
+  for (i = 0; i < p->size1; i++)
+    for (j = 0; j < p->size2; j++)
+      _p[i][j] = gsl_matrix_get(p,i,j);
 }
 
 mds_data_t * copy_mds_data(mds_data_t *M)
