@@ -15,12 +15,15 @@ test_basic_nonsimplex: mds.o test_basic_nonsimplex.o
 test_mds_simplex: mds.o test_mds_simplex.o
 	$(CC) $(LDFLAGS) -lmds_simplex $(addprefix $(builddir)/,$^) -o build/$@
 
+test_iterative_majorize: mds.o test_iterative_majorize.o
+	$(CC) $(LDFLAGS) -lmds_iterative_majorize $(addprefix $(builddir)/,$^) -o build/$@
+
+# mds_simplex: mds.o mds_simplex.o commonFuncs.o
+# 	$(CC) $(LDFLAGS) $(addprefix $(builddir)/,$^) -o build/$@
+mds_iterative_majorize:  mds.o commonFuncs.o iterative_majorize.o mds_iterative_majorize.o
+	$(CC) $(LDFLAGS) $(LIBRARY_MODE) $(addprefix $(builddir)/,$^) -o build/lib$@.so
 
 mds_simplex: mds.o mds_simplex.o commonFuncs.o
-	$(CC) $(LDFLAGS) $(addprefix $(builddir)/,$^) -o build/$@
-
-
-mds_simplex: mds.o mds_simplex.o
 	$(CC) $(LDFLAGS) $(LIBRARY_MODE) $(addprefix $(builddir)/,$^) -o build/libmds_simplex.so
 
 
