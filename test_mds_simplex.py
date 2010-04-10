@@ -1,11 +1,11 @@
-from numpy import *
-from ctypes import *
 from mds_lib import *
+from ctypes import *
+from numpy import *
 import numpy.linalg.linalg as l
 import pylab
 
-def mds(X,D, max_step=16, energy_limit=1e-3, temperature=1, damping_factor=1.05,
-        iters=10, boltzman_k=1, temp_min=1e-5, verbose_mode=1):
+
+def mds(X,D, max_step=16, energy_limit=1e-3, iters=100, verbose_mode=1):
     p = convertTo_c_pointer_pointer_array(X)
     d = convertTo_c_pointer_pointer_array(D)
 
@@ -16,11 +16,10 @@ def mds(X,D, max_step=16, energy_limit=1e-3, temperature=1, damping_factor=1.05,
         print
     print p, byref(p.contents), p.contents
     print
-    libbasic_nonsimplex = CDLL('libbasic_nonsimplex.so')
-    libbasic_nonsimplex.mds_solve.argtypes = [p_t, c_int, c_int, p_t, c_float, c_float, c_float, c_float, c_int, c_float, c_float, c_int];
+    libbasic_nonsimplex = CDLL('libmds_simplex.so')
+    libbasic_nonsimplex.mds_solve.argtypes = [p_t, c_int, c_int, p_t, c_float,  c_float, c_int, c_int];
     a = libbasic_nonsimplex.mds_solve(p, X.shape[0], X.shape[1], d, max_step,
-                                  energy_limit, temperature, damping_factor,
-                                  iters, boltzman_k, temp_min, verbose_mode)
+                                  energy_limit, iters, verbose_mode)
     return convertTo_array_from_c_pointer_pointer(p,3,2)
 
 def plot(X, fmt="b-*"):

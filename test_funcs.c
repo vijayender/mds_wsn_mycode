@@ -13,6 +13,8 @@ int main (int argc, char *argv[]){
   p = gsl_matrix_alloc(3, 2);
   d = gsl_matrix_alloc(3, 3);
 
+  gsl_vector *vec = gsl_vector_alloc_from_block(p->block, 0, p->size1 * p->size2, 1);
+
   print_matrix_2d(d, "d");
 
   gsl_matrix_set(p,0,0,3);
@@ -67,9 +69,10 @@ int main (int argc, char *argv[]){
 
   //Printing the block
   double *block = p->block->data;
+
   for (i = 0; i < p->block->size; i++)
-    printf(" %f ",block[i]);
-  printf("A proof of row ordered data\n\n");
+    printf(" %f -- %f ",block[i], gsl_vector_get(vec, i));
+  printf("A proof of row ordered data and accessing same matrix as vector\n\n");
   
   /* create a random number gerneator */
   gsl_rng *numbers_generator = gsl_rng_alloc(gsl_rng_rand);
