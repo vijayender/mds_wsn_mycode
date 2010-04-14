@@ -38,9 +38,9 @@ def generate_files_for_increasing_number_of_points_random_inp(start, end, step, 
                 # by any of the c libraries
                 io.close
             li.write_entry(le)     # enter into list file (which lists all the inputs)
-            # BASIC_NONSIMPLEX
-            if not check_file(c+'_basic_nonsimplex'):
-                io = test_io_inp_config(c+'_basic_nonsimplex')
+            # BASIC_SA
+            if not check_file(c+'_basic_sa'):
+                io = test_io_inp_config(c+'_basic_sa')
                 #max_step, energy_limit, temperature, damping_factor, iters, boltzman_k, temp_min,
                 io.write("m 10")      # max step
                 io.write("e 0.01")    # energy minimum

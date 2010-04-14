@@ -4,16 +4,16 @@ LDFLAGS=-lm -ggdb -lgsl -lcblas -lannealing1.1  -L../annealing/build/libraries.d
 basedir=.
 builddir=$(basedir)/build
 LIBRARY_MODE=-shared
-#basic_nonsimplex_ldflags = -lbasic_nonsimplex
-all: puresa_old basic_nonsimplex
+#basic_sa_ldflags = -lbasic_sa
+all: basic_sa mds_simplex iterative_majorize test_library test_basic_sa test_mds_simplex test_iterative_majorize
 
-tests: test_basic_nonsimplex test_funcs
+tests: test_basic_sa test_funcs
 
 test_library: mds.o test_io.o test_library.o
-	$(CC) $(LDFLAGS) -lmds_simplex -lbasic_nonsimplex -literative_majorize $(addprefix $(builddir)/,$^) -o build/$@
+	$(CC) $(LDFLAGS) -lmds_simplex -lbasic_sa -literative_majorize $(addprefix $(builddir)/,$^) -o build/$@
 
-test_basic_nonsimplex: mds.o test_basic_nonsimplex.o
-	$(CC) $(LDFLAGS) -lbasic_nonsimplex $(addprefix $(builddir)/,$^) -o build/$@
+test_basic_sa: mds.o test_basic_sa.o
+	$(CC) $(LDFLAGS) -lbasic_sa $(addprefix $(builddir)/,$^) -o build/$@
 
 test_mds_simplex: mds.o test_mds_simplex.o 
 #	$(CC) $(LDFLAGS) $(addprefix $(builddir)/,$^) -o build/$@
@@ -35,8 +35,8 @@ mds_simplex: mds.o mds_simplex.o commonFuncs.o
 	$(CC) $(LDFLAGS) $(LIBRARY_MODE) $(addprefix $(builddir)/,$^) -o build/libmds_simplex.so
 
 
-basic_nonsimplex: mds.o basic_nonsimplex.o
-	$(CC) $(LDFLAGS) $(LIBRARY_MODE) $(addprefix $(builddir)/,$^) -o build/libbasic_nonsimplex.so
+basic_sa: mds.o basic_sa.o
+	$(CC) $(LDFLAGS) $(LIBRARY_MODE) $(addprefix $(builddir)/,$^) -o build/libbasic_sa.so
 
 test_funcs:  test_funcs.o  mds.o test_io.o
 	$(CC) $(LDFLAGS)   $(addprefix $(builddir)/,$^) -o build/test_funcs

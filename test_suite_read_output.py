@@ -83,7 +83,7 @@ if __name__ == "__main__":
                          ('S','int','S'),
                          ('I','int','I')],
                         f, path, lib)
-#                        'build/input/list1','build', 'basic_nonsimplex')
+#                        'build/input/list1','build', 'basic_sa')
     l = po.get_data()
     print '#',
     for elem,typ,pr in po.cargs:

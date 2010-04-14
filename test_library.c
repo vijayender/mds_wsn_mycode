@@ -1,5 +1,5 @@
 #include "mds.h"
-#include "basic_nonsimplex.h"
+#include "basic_sa.h"
 #include "iterative_majorize.h"
 #include "mds_simplex.h"
 #include "test_io.h"
@@ -11,11 +11,11 @@
 
 extern char *optarg;
 extern int optind, optopt;
-void run_basic_nonsimplex(int verbose_mode);
+void run_basic_sa(int verbose_mode);
 void run_iterative_majorize(int verbose_mode);
 void run_mds_simlex(int verbose_mode);
 
-char *ifile, *ofile, *cfile, *lib, *err_str = "usage: test_basic_nonsimplex [-v] [-h] -i inputfile -c configfile -o outputfile -l library\n";
+char *ifile, *ofile, *cfile, *lib, *err_str = "usage: test_basic_sa [-v] [-h] -i inputfile -c configfile -o outputfile -l library\n";
 struct rusage start,end;
 
 
@@ -46,7 +46,7 @@ float **new_float_matrix_2d(int dim1, int dim2)
 }
 
 int main(int argc, char *argv[]){
-  char *basic_nonsimplex = "basic_nonsimplex";
+  char *basic_sa = "basic_sa";
   char *iterative_majorize = "iterative_majorize";
   char *mds_simplex = "mds_simplex";
     
@@ -76,7 +76,7 @@ int main(int argc, char *argv[]){
 	  lib = optarg;
 	  break;
 	default:
-	  fprintf(stderr, "test_basic_nonsimplex error: unknown option %c\n", c);
+	  fprintf(stderr, "test_basic_sa error: unknown option %c\n", c);
 	  exit(EXIT_FAILURE);
 	}
   }
@@ -87,8 +87,8 @@ int main(int argc, char *argv[]){
   }
   printf("input:%s config:%s output:%s\n",ifile,cfile,ofile);
 
-  if ( strcmp(basic_nonsimplex, lib) == 0 ){
-    run_basic_nonsimplex(verbose_mode);
+  if ( strcmp(basic_sa, lib) == 0 ){
+    run_basic_sa(verbose_mode);
   }else if ( strcmp(iterative_majorize, lib) == 0 ){
     run_iterative_majorize(verbose_mode);
   }else if ( strcmp(mds_simplex, lib) == 0 ){
@@ -99,7 +99,7 @@ int main(int argc, char *argv[]){
   return 0;
 }
 
-void run_basic_nonsimplex(int verbose_mode)
+void run_basic_sa(int verbose_mode)
 {  
   float **p, **D, loss;
   int pts,pdim, iters;
@@ -118,7 +118,7 @@ void run_basic_nonsimplex(int verbose_mode)
 
   
   getrusage(RUSAGE_SELF, &start);
-  iters = basic_nonsimplex_solve(p, pts, pdim, D,m,e,T,d,i,b,t,
+  iters = basic_sa_solve(p, pts, pdim, D,m,e,T,d,i,b,t,
 	    verbose_mode,
 	    &loss);
   getrusage(RUSAGE_SELF, &end);

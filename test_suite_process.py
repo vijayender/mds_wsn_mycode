@@ -34,5 +34,5 @@ if __name__ == "__main__":
     else:
         verbose = 0
     print verbose
-    run_proc_l('build','basic_nonsimplex','input/list1', verbose)
+    run_proc_l('build','basic_sa','input/list1', verbose)
     pass
