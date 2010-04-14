@@ -1,6 +1,7 @@
 /* The following file has codes to test the functions in mds.c
  */
 #include "mds.h" // It includes stdlib, stdio
+#include "test_io.h"
 
 #define print_p(x,y) print_matrix_2d(x, y)
 
@@ -81,5 +82,21 @@ int main (int argc, char *argv[]){
   print_p(p, "p after step_function");
   printf("computed loss %f after step_function\n",loss_function_simple(p, d, -1));
   gsl_rng_free(numbers_generator);
+
+  // Testing file io
+  float **p2;
+  int dim1,dim2;
+  read_from_file("build/input/inp00004.data",'x',&p2,&dim1,&dim2);
+
+  printf("data of x from input/inp00004.data:\n");
+  
+  for (i = 0; i < dim1; i++){
+    for (j = 0; j < dim2; j++)
+      printf(" %f ",p2[i][j]);
+    printf("\n");
+  }
+
+  printf("finished\n");
+  
   return 0;
 }

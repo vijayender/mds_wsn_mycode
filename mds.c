@@ -92,3 +92,14 @@ void compute_distance_matrix_lt (gsl_matrix *d, gsl_matrix *p)
       gsl_matrix_set(d, i, j, sqrt(psum));
     }
 }
+
+double sum_distance_matrix (gsl_matrix *d)
+/* Provides sum of the lower triangle elements of distance matrix provided */
+{
+  int i,j;
+  double sum = 0;
+  for (i = 0; i < d->size1; i++)
+    for (j = 0; j < i; j++)
+      sum += gsl_matrix_get(d, i, j);
+  return sum;
+}

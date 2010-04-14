@@ -1,5 +1,5 @@
 #include "mds.h"
-#include "mds_iterative_majorize.h"
+#include "iterative_majorize.h"
 
 void print_matrix (float **p, int dim1, int dim2, char* str)
 {
@@ -47,7 +47,7 @@ int main(int argc, char *argv[]){
 	}
   }
 
-  float **p, **d, psum, diff;
+  float **p, **d, psum, diff, loss;
   int i,j,k;
   float val[][2] = {{1,2},{3,4},{5,6}};
   gsl_rng * number_generator = gsl_rng_alloc(gsl_rng_rand);
@@ -79,9 +79,12 @@ int main(int argc, char *argv[]){
     for (j = 0; j < 2; j++)
       p[i][j] = gsl_rng_uniform(number_generator) * 5;
   print_matrix(p, 3, 2, "p intially");
+  print_matrix(d, 3, 2, "d");
 
-  mds_solve(p, 3, 2, d, .001, 500, verbose_mode);
-  
+  i = iterative_majorize_solve(p, 3, 2, d, 500, .001, verbose_mode, &loss);
+
+  print_matrix(p, 3, 2, "result:");
+  printf( " final loss %f after %d iterations \n", loss, i);
   exit(EXIT_SUCCESS);
   return 0;
 }

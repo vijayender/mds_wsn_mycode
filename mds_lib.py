@@ -28,3 +28,6 @@ def d2_from_p(p):
         for j in xrange(0, i):
             d2[i,j] = l.norm(p[i,:] - p[j,:])**2
     return d2;
+
+def generate_random_points(size=10, mu=0, var=10):
+    return random.normal (mu, var, size * 2).reshape(size, 2)

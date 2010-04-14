@@ -7,7 +7,7 @@
 #include <gsl/gsl_math.h>
 #include <gsl/gsl_multimin.h>
 
-int mds_solve(float **p, int pts, int pdim, float**  d, float _max_step, float energy_limit, int iters,  int verbose_mode);
+int mds_simplex_solve(float **p, int pts, int pdim, float**  d, float _max_step, float energy_limit, int iters,  int verbose_mode, float *loss);
 
 
 #endif

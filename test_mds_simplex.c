@@ -48,7 +48,7 @@ int main(int argc, char *argv[]){
 	}
   }
 
-  float **p, **d, psum, diff;
+  float **p, **d, psum, diff, loss;
   int i,j,k;
   float val[][2] = {{1,2},{3,4},{5,6}};
   gsl_rng * number_generator = gsl_rng_alloc(gsl_rng_rand);
@@ -80,9 +80,11 @@ int main(int argc, char *argv[]){
     for (j = 0; j < 2; j++)
       p[i][j] = gsl_rng_uniform(number_generator) * 5;
   print_matrix(p, 3, 2, "p intially");
-
-  mds_solve(p, 3, 2, d, 16, .001, 500, verbose_mode);
-  
+  printf("running \t...\n");
+  i = mds_simplex_solve(p, 3, 2, d, 16, .001, 500000, verbose_mode, &loss);
+  printf("... \t\tfinished\n");
+  print_matrix(p, 3, 2, "result:");
+  printf( " final loss %f after %d iterations \n", loss, i);
   exit(EXIT_SUCCESS);
   return 0;
 }

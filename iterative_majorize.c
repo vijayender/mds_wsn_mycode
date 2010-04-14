@@ -1,7 +1,35 @@
 #include "iterative_majorize.h"
 #include "mds.h"
 #include "gsl/gsl_blas.h"
+#include "commonFuncs.h"
 
+int iterative_majorize_solve(float **_p, int pts, int pdim, float**  _d, int _iters, float energy_limit, int verbose_mode, float *final_loss)
+{
+  //Conversion from the given data
+  gsl_matrix *p, *d;
+  iterative_majorizer_t *s;
+  int iters = 0;
+  double lower_triangle, limit;
+
+  s = iterative_majorizer_alloc();
+  p = convert_to_gsl_matrix(_p, pts, pdim);
+  d = convert_to_gsl_matrix(_d, pts, pts);
+  iterative_majorizer_initialize(s, p, d);
+  lower_triangle = sum_distance_matrix(d);
+  limit = lower_triangle * energy_limit;
+
+  do{
+    iters++;
+    iterative_majorizer_iterate(s);
+    if(verbose_mode) {
+      printf("%5d: loss %f, loss_temp %f, limit %f * %f \n", iters, s->loss, s->loss_temp, energy_limit, lower_triangle);
+      printf("\n-----------------------------------\n");
+    }
+  }while(_iters > iters && s->loss > limit);
+  *final_loss = s->loss;
+  update_to_float(s->x, _p);
+  return iters;
+}
 
 iterative_majorizer_t * iterative_majorizer_alloc ()
 {
@@ -18,6 +46,7 @@ void iterative_majorizer_initialize (iterative_majorizer_t *s, gsl_matrix *x, gs
   s->DZ = gsl_matrix_alloc(d->size1, d->size2);
   s->loss = loss_function_simple(s->x, s->d, -1);
 }
+
 void iterative_majorizer_iterate (iterative_majorizer_t *s)
 {
   int i,j;
@@ -26,8 +55,10 @@ void iterative_majorizer_iterate (iterative_majorizer_t *s)
   // To Find X_new :
   // Find DZ
   compute_distance_matrix_lt(s->DZ, s->x);
+  #ifdef DEBUG
   print_matrix_2d(s->x, "from x");
   print_matrix_2d(s->DZ, "DZ");
+  #endif
   // Compute B(X) using d1/dz
   for (i = 0; i < s->d->size1; i++){
     for (j = 0,psum = 0; j < s->d->size2; j++){
@@ -42,13 +73,16 @@ void iterative_majorizer_iterate (iterative_majorizer_t *s)
     gsl_matrix_set(s->BZ, i, i, -psum);
   }
   //Update the diagonal elements
-    
+  #ifdef DEBUG
   print_matrix_2d(s->BZ,"BZ");
+  #endif
   // Multiply B(x)*x in DZ and store in x_temp
   gsl_blas_dgemm (CblasNoTrans, CblasNoTrans,
 		  1.0, s->BZ, s->x,
 		  0.0, s->x_temp);
+  #ifdef DEBUG
   print_matrix_2d(s->x_temp, "new x");
+  #endif
   s->loss_temp = loss_function_simple_unsquared_d(s->x_temp, s->d, -1);
   // swap pointers x and x_temp
   x_temp = s->x_temp; s->x_temp = s->x; s->x = x_temp;

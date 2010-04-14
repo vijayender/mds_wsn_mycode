@@ -21,19 +21,20 @@ gsl_matrix * convert_to_gsl_matrix (float **_p, int dim1, int dim2);
 void update_to_float (gsl_matrix *, float **);
 mds_data_t * copy_mds_data(mds_data_t *M);
 
-int mds_solve(float **p, int pts, int pdim, float**  d, float _max_step, float energy_limit, float temperature, float damping_factor, int iters, float boltzman_k, float temp_min, int verbose_mode){
+int basic_nonsimplex_solve(float **p, int pts, int pdim, float**  d, float _max_step, float energy_limit, float temperature, float damping_factor, int iters, float boltzman_k, float temp_min, int verbose_mode, float *f_loss){
   annealing_simple_workspace_t S;
   mds_data_t configuration;
   double max_step; // Set it to half the largest distance in the given set.
   mds_data_t *temp;
+  double lower_triangle;
 
   max_step = _max_step;
   configuration.p = convert_to_gsl_matrix(p, pts, pdim);
   configuration.d = convert_to_gsl_matrix(d, pts, pts);
-
+  lower_triangle = sum_distance_matrix(configuration.d);
   //load_data(&configuration); // Load default configuration data
   
-  S.number_of_iterations_at_fixed_temperature = 10;
+  S.number_of_iterations_at_fixed_temperature = iters;
   S.max_step_value		= &max_step;
 
   S.temperature			= temperature;
@@ -41,7 +42,7 @@ int mds_solve(float **p, int pts, int pdim, float**  d, float _max_step, float e
   S.restart_temperature		= DBL_MIN; /* do not restart */
   S.boltzmann_constant		= boltzman_k;
   S.damping_factor		= damping_factor;
-  S.energy_limit		= energy_limit;
+  S.energy_limit		= energy_limit * lower_triangle;
   S.energy_limit_set		= 1;
 
   S.energy_function		= energy_function;
@@ -59,19 +60,11 @@ int mds_solve(float **p, int pts, int pdim, float**  d, float _max_step, float e
 
   annealing_simple_solve(&S);
 
-  //  printf("test_sinc: final best solution: %f, global 0.0\n", configurations[1]);
-  printf("basic_nonsimplex: final best solution: %f, after %d steps\n", S.best_configuration.energy, steps_count);
-  printf("------------------------------------------------------------\n\n");
-
   temp = (mds_data_t *) S.best_configuration.data;
-  print_p(temp->p,"p");
-  print_p(temp->d,"d");
+  *f_loss = S.best_configuration.energy;
   gsl_rng_free(S.numbers_generator);
-  temp->p->block;
-  gsl_block_data;
   update_to_float(temp->p, p);
   return steps_count;
-  //  return 0;
 }
 
 /* ------------------------------------------------------------ */
