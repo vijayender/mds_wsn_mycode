@@ -77,9 +77,10 @@ void iterative_majorizer_iterate (iterative_majorizer_t *s)
   print_matrix_2d(s->BZ,"BZ");
   #endif
   // Multiply B(x)*x in DZ and store in x_temp
-  gsl_blas_dgemm (CblasNoTrans, CblasNoTrans,
-		  1.0, s->BZ, s->x,
-		  0.0, s->x_temp);
+  /* gsl_blas_dgemm (CblasNoTrans, CblasNoTrans, */
+  /* 		  1.0, s->BZ, s->x, */
+  /* 		  0.0, s->x_temp); */
+  multiply_mat( s->BZ, s->x, s->x_temp);
   #ifdef DEBUG
   print_matrix_2d(s->x_temp, "new x");
   #endif
@@ -87,4 +88,19 @@ void iterative_majorizer_iterate (iterative_majorizer_t *s)
   // swap pointers x and x_temp
   x_temp = s->x_temp; s->x_temp = s->x; s->x = x_temp;
   d_temp = s->loss_temp; s->loss_temp = s->loss; s->loss = d_temp;
+}
+
+void multiply_mat (gsl_matrix *x, gsl_matrix* y, gsl_matrix *res)
+{
+  int i,j,k;
+  double val;
+  for (i = 0; i < res->size1; i++) {
+    for (j = 0; j < res->size2; j++){
+      val = 0;
+      for (k = 0; k < x->size2; k++){
+	val += gsl_matrix_get(x, i, k) * gsl_matrix_get(y, k, j);
+      }
+      gsl_matrix_set (res, i, j, val);
+    }
+  }
 }
