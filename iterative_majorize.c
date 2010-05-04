@@ -15,18 +15,18 @@ int iterative_majorize_solve(float **_p, int pts, int pdim, float**  _d, int _it
   p = convert_to_gsl_matrix(_p, pts, pdim);
   d = convert_to_gsl_matrix(_d, pts, pts);
   iterative_majorizer_initialize(s, p, d);
-  lower_triangle = sum_distance_matrix(d);
+  lower_triangle = sum_distance_matrix_sqr(d);
   limit = lower_triangle * energy_limit;
 
   do{
     iters++;
     iterative_majorizer_iterate(s);
     if(verbose_mode) {
-      printf("%5d: loss %f, loss_temp %f, limit %f * %f \n", iters, s->loss, s->loss_temp, energy_limit, lower_triangle);
+      printf("%5d: loss %f, loss_temp %f, limit %f * %f \n", iters, s->loss/lower_triangle, s->loss_temp, energy_limit, lower_triangle);
       printf("\n-----------------------------------\n");
     }
   }while(_iters > iters && s->loss > limit);
-  *final_loss = s->loss;
+  *final_loss = s->loss / lower_triangle;
   update_to_float(s->x, _p);
   return iters;
 }

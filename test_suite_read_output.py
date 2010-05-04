@@ -70,20 +70,35 @@ if __name__ == "__main__":
     path = sys.argv[2]
     f = sys.argv[1]
     lib = sys.argv[3]
-    po = process_output([('m','int','m'),
-                         ('i','int','i'),
-                         ('e','float','e'),
-                         ('T','float','T'),
-                         ('d','float','d'),
-                         ('b','float','b'),
-                         ('t','float','t'),
-                         ('s','int','s')],
-                        [('L','float','L'),
-                         ('u','int','\tu'),
-                         ('S','int','S'),
-                         ('I','int','I')],
-                        f, path, lib)
-#                        'build/input/list1','build', 'basic_sa')
+    if lib == 'mds_simplex':
+        po = process_output([('i','int','i'),
+                             ('m','float','m'),
+                             ('s','int','s')],[('L','float','L'),
+                                             ('u','int','\tu'),
+                                             ('S','int','S'),
+                                             ('I','int','I')],
+                             f, path, lib)
+    if lib == 'iterative_majorize':
+        po = process_output([('i','int','i'),
+                             ('s','int','s')],[('L','float','L'),
+                                             ('u','int','\tu'),
+                                             ('S','int','S'),
+                                             ('I','int','I')],
+                             f, path, lib)
+    if lib == 'basic_sa':
+        po = process_output([('m','float','m'),
+                             ('i','int','i'),
+                             ('e','float','e'),
+                             ('T','float','T'),
+                             ('d','float','d'),
+                             ('b','float','b'),
+                             ('t','float','t'),
+                             ('s','int','s')],[('L','float','L'),
+                                               ('u','int','\tu'),
+                                               ('S','int','S'),
+                                               ('I','int','I')],
+                             f, path, lib)
+    #                        'build/input/list1','build', 'basic_sa')
     l = po.get_data()
     print '#',
     for elem,typ,pr in po.cargs:

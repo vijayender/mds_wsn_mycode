@@ -16,9 +16,9 @@ double loss_function_simple(gsl_matrix *p, gsl_matrix *d, float lim)
       dist_p = psum;
       dist_d = gsl_matrix_get(d,i,j);
       diff = sqrt(dist_p) - sqrt(dist_d);
-      // printf(" | %f %f %f",dist_p, dist_d, diff);
+      //printf(" | %f %f %f",dist_p, dist_d, diff);
       loss += SQR(diff);
-      // printf("%d,%d,%d\n",i,j,k);
+      //printf("%d,%d,%d\n",i,j,k);
       if ((lim > 0) & (loss > lim))
 	return -1;
     }
@@ -101,5 +101,16 @@ double sum_distance_matrix (gsl_matrix *d)
   for (i = 0; i < d->size1; i++)
     for (j = 0; j < i; j++)
       sum += gsl_matrix_get(d, i, j);
+  return sum;
+}
+
+double sum_distance_matrix_sqr (gsl_matrix *d)
+/* Provides sum of the lower triangle elements of distance matrix provided */
+{
+  int i,j;
+  double sum = 0;
+  for (i = 0; i < d->size1; i++)
+    for (j = 0; j < i; j++)
+      sum += SQR(gsl_matrix_get(d, i, j));
   return sum;
 }

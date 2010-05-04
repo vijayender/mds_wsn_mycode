@@ -1,6 +1,7 @@
 #include "mds.h"
 #include "basic_sa.h"
 #include "iterative_majorize.h"
+#include "iterative_majorize_improved.h"
 #include "mds_simplex.h"
 #include "test_io.h"
 #include <time.h>
@@ -13,6 +14,7 @@ extern char *optarg;
 extern int optind, optopt;
 void run_basic_sa(int verbose_mode);
 void run_iterative_majorize(int verbose_mode);
+void run_iterative_majorize_improved(int verbose_mode);
 void run_mds_simlex(int verbose_mode);
 
 char *ifile, *ofile, *cfile, *lib, *err_str = "usage: test_basic_sa [-v] [-h] -i inputfile -c configfile -o outputfile -l library\n";
@@ -48,6 +50,7 @@ float **new_float_matrix_2d(int dim1, int dim2)
 int main(int argc, char *argv[]){
   char *basic_sa = "basic_sa";
   char *iterative_majorize = "iterative_majorize";
+  char *iterative_majorize_improved = "iterative_majorize_improved";
   char *mds_simplex = "mds_simplex";
     
   int verbose_mode = 0;
@@ -91,6 +94,8 @@ int main(int argc, char *argv[]){
     run_basic_sa(verbose_mode);
   }else if ( strcmp(iterative_majorize, lib) == 0 ){
     run_iterative_majorize(verbose_mode);
+  }else if ( strcmp(iterative_majorize_improved, lib) == 0 ){
+    run_iterative_majorize_improved(verbose_mode);
   }else if ( strcmp(mds_simplex, lib) == 0 ){
     run_mds_simlex(verbose_mode);
   }
@@ -193,6 +198,41 @@ void run_mds_simlex(int verbose_mode)
   getrusage(RUSAGE_SELF, &end);
 
   //mds_solve(p, pts, pdim, d, 16, .001, 1, 1.005, 10, 1, 1e-5, verbose_mode);
+  write_char_to_file(ofile,' ');
+  write_floatarr_to_file(ofile, p, 'p', pts, pdim);
+  write_float_to_file(ofile, 'L', loss);
+  write_int_to_file(ofile, 'I', iters);
+  /* Log both system time and user time though only user time will be used */
+  write_int_to_file(ofile,'u', (end.ru_utime.tv_usec - start.ru_utime.tv_usec)+1000000 * ( end.ru_utime.tv_sec - start.ru_utime.tv_sec));
+  write_int_to_file(ofile,'S', ( end.ru_stime.tv_usec - start.ru_stime.tv_usec)+1000000 * ( end.ru_stime.tv_sec - start.ru_stime.tv_sec));
+  /* iters it took 'i'
+   * final loss 'l'
+   */
+  printf(" user time %ld\n", (end.ru_utime.tv_usec - start.ru_utime.tv_usec)+1000000 * ( end.ru_utime.tv_sec - start.ru_utime.tv_sec));
+  printf(" system time %ld\n", ( end.ru_stime.tv_usec - start.ru_stime.tv_usec)+1000000 * ( end.ru_stime.tv_sec - start.ru_stime.tv_sec));
+  printf(" final loss after %d iters: %f\n", iters, loss);
+}
+
+
+void run_iterative_majorize_improved(int verbose_mode)
+{  
+  float **p, **D, loss;
+  int pts,pdim, iters;
+  int i,_i,_j;
+  float e;
+
+  read_from_file(ifile,'x',&p,&pts,&pdim);
+  read_from_file(ifile,'d',&D,&pts,&pts);
+  for ( _i = 0; _i < pts; _i++)
+    for (_j = 0; _j < _i; _j++)
+      D[_i][_j] = sqrt(D[_i][_j]); /* 'coz iterative majorize uses unsquared distances */
+  e = read_float_from_file(cfile,'e'); /* Loss */
+  i = read_int_from_file(cfile,'i');   /* iters */
+  
+  getrusage(RUSAGE_SELF, &start);
+  iters = iterative_majorize_improved_solve(p, pts, pdim, D, i, e, verbose_mode, &loss);
+  getrusage(RUSAGE_SELF, &end);
+
   write_char_to_file(ofile,' ');
   write_floatarr_to_file(ofile, p, 'p', pts, pdim);
   write_float_to_file(ofile, 'L', loss);

@@ -11,6 +11,7 @@ static	annealing_log_fun_t	log_function;
 static	annealing_copy_fun_t	copy_function;
 
 static int steps_count = 0;
+double lower_triangle;
 
 typedef struct mds_data_t{
   gsl_matrix *p;
@@ -26,7 +27,6 @@ int basic_sa_solve(float **p, int pts, int pdim, float**  d, float _max_step, fl
   mds_data_t configuration;
   double max_step; // Set it to half the largest distance in the given set.
   mds_data_t *temp;
-  double lower_triangle;
 
   max_step = _max_step;
   configuration.p = convert_to_gsl_matrix(p, pts, pdim);
@@ -36,7 +36,7 @@ int basic_sa_solve(float **p, int pts, int pdim, float**  d, float _max_step, fl
   
   S.number_of_iterations_at_fixed_temperature = iters;
   S.max_step_value		= &max_step;
-
+  
   S.temperature			= temperature;
   S.minimum_temperature		= temp_min;
   S.restart_temperature		= DBL_MIN; /* do not restart */
@@ -61,7 +61,7 @@ int basic_sa_solve(float **p, int pts, int pdim, float**  d, float _max_step, fl
   annealing_simple_solve(&S);
 
   temp = (mds_data_t *) S.best_configuration.data;
-  *f_loss = S.best_configuration.energy;
+  *f_loss = S.best_configuration.energy / lower_triangle ;
   gsl_rng_free(S.numbers_generator);
   update_to_float(temp->p, p);
   return steps_count;
@@ -92,7 +92,7 @@ log_function (void * W)
   double	best    = *((double *)S->best_configuration.data);
 
    printf("current %f (energy %f), best %f (energy %f)\n",
-	 current, S->current_configuration.energy,
+	 current, S->current_configuration.energy/lower_triangle,
 	 best,    S->best_configuration.energy);
 }
 void

@@ -31,3 +31,12 @@ def d2_from_p(p):
 
 def generate_random_points(size=10, mu=0, var=10):
     return random.normal (mu, var, size * 2).reshape(size, 2)
+
+# Generate random points
+# Find distances
+def generate_wsn_like_distances(d, sigma):
+# Add error to the distances
+    err = array([power(10,(random.normal(0,sigma))/10/2.11) for i in range(0,d.shape[1]*d.shape[0])]).reshape(d.shape[0],d.shape[1])
+    d = multiply(d,err)
+    return d
+# Return 

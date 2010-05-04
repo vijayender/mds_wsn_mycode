@@ -1,16 +1,16 @@
-CC=/usr/bin/gcc -pg -fPIC
+CC=/usr/bin/gcc -fPIC
 CFLAGS=-c -ggdb -Wall -I../annealing/src/lib -I.
-LDFLAGS=-lm -ggdb -lgsl -lcblas -lannealing1.1  -L../annealing/build/libraries.d/  -L./build/ 
+LDFLAGS=-lm -ggdb -lgsl -lgslcblas -lannealing1.1  -L../annealing/build/libraries.d/  -L./build/ 
 basedir=.
 builddir=$(basedir)/build
 LIBRARY_MODE=-shared
 #basic_sa_ldflags = -lbasic_sa
-all: basic_sa mds_simplex iterative_majorize test_library test_basic_sa test_mds_simplex test_iterative_majorize
+all: basic_sa mds_simplex iterative_majorize iterative_majorize_improved test_library test_basic_sa test_mds_simplex test_iterative_majorize
 
 tests: test_basic_sa test_funcs
 
 test_library: mds.o test_io.o test_library.o
-	$(CC) $(LDFLAGS) -lmds_simplex -lbasic_sa -literative_majorize $(addprefix $(builddir)/,$^) -o build/$@
+	$(CC) $(LDFLAGS) -lmds_simplex -lbasic_sa -literative_majorize -literative_majorize_improved $(addprefix $(builddir)/,$^) -o build/$@
 
 test_basic_sa: mds.o test_basic_sa.o
 	$(CC) $(LDFLAGS) -lbasic_sa $(addprefix $(builddir)/,$^) -o build/$@
@@ -26,6 +26,9 @@ test_iterative_majorize: mds.o test_iterative_majorize.o commonFuncs.o
 # 	$(CC) $(LDFLAGS) $(addprefix $(builddir)/,$^) -o build/$@
 #mds_iterative_majorize:  mds.o commonFuncs.o iterative_majorize.o mds_iterative_majorize.o
 #	$(CC) $(LDFLAGS) $(LIBRARY_MODE) $(addprefix $(builddir)/,$^) -o build/lib$@.so
+
+iterative_majorize_improved:  mds.o commonFuncs.o iterative_majorize_improved.o
+	$(CC) $(LDFLAGS) $(LIBRARY_MODE) $(addprefix $(builddir)/,$^) -o build/lib$@.so
 
 iterative_majorize:  mds.o commonFuncs.o iterative_majorize.o
 	$(CC) $(LDFLAGS) $(LIBRARY_MODE) $(addprefix $(builddir)/,$^) -o build/lib$@.so

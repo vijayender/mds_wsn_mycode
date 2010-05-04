@@ -12,6 +12,9 @@ class test_io_list_out:
         line = fname + "\n"
         self.list_file.write(line)
 
+    def close(self):
+        self.list_file.close()
+
 class test_io_list_in:
     """ For reading list files
     """
@@ -20,6 +23,9 @@ class test_io_list_in:
 
     def read_entry(self):
         return self.list_file.readline()
+
+    def close(self):
+        self.list_file.close()
             
 def check_file(fname):
     return os.path.isfile(fname)

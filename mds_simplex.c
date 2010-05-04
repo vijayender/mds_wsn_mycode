@@ -44,7 +44,7 @@ int mds_simplex_solve(float **_p, int pts, int pdim, float**  _d, float _max_ste
     if(verbose_mode){
       printf("%i: \n",iter);
       //    printf("x "); gsl_vector_fprintf (stdout, s->x, "%g"); 
-      printf("f(x) %f\n", gsl_multimin_fminimizer_minimum (s));
+      printf("f(x) %f\n", gsl_multimin_fminimizer_minimum (s) / lower_triangle);
       printf("size: %f\n", gsl_multimin_fminimizer_size (s));
       printf("limit: %f * %f\n", lower_triangle, energy_limit);
       printf("\n");
@@ -57,7 +57,7 @@ int mds_simplex_solve(float **_p, int pts, int pdim, float**  _d, float _max_ste
 				       p->size1, p->size2,
 				       p->tda);
   update_to_float(result, _p);
-  *loss = gsl_multimin_fminimizer_minimum (s);
+  *loss = gsl_multimin_fminimizer_minimum (s) / lower_triangle;
   
   return iter;
 }
